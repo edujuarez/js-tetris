@@ -1,0 +1,6 @@
+# js-tetris
+Tetris en js vainilla
+
+-Configurar botones de speed
+-Configurar boton de rmk
+-Estilo en general
