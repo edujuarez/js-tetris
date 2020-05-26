@@ -4,10 +4,22 @@ document.addEventListener('DOMContentLoaded', () => {
   let squares = Array.from(document.querySelectorAll('.grid div'))
   const scoreDisplay = document.querySelector('#score')
   const startBtn = document.querySelector('#start-button')
+  const speedDisplay = document.querySelector('#speed')
+  const incSpeed = document.querySelector('#incSpeed')
+  const restarBtn = document.querySelector('#restart')
   const width = 10
   let nextRandom = 0
   let timerId
+  let speed = 1000
+
   let score = 0
+  const colors = [
+    'red',
+    'purple',
+    'blue',
+    'orange',
+    'green'
+  ]
 
   //Piezas y sus rotaciones
   const lPieza = [ 
@@ -44,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     [width, width+1, width+2, width+3]
   ]
 
+
 const piezas = [lPieza, sPieza, tPieza, oPieza, iPieza]
 
 let currentPosition = 4
@@ -57,6 +70,7 @@ let current = piezas[random][0]
 function draw(){
   current.forEach(index => {
     squares[currentPosition + index].classList.add('pieza')
+    squares[currentPosition + index].style.backgroundColor = colors[random]
   })
 }
 
@@ -64,6 +78,7 @@ function draw(){
 function undraw() {
   current.forEach(index => {
     squares[currentPosition + index].classList.remove('pieza')
+    squares[currentPosition + index].style.backgroundColor = ''
   })
 }
 
@@ -85,7 +100,7 @@ function control(e) {
 }
 document.addEventListener('keyup', control)
 
-//Movimiento hacia abajo
+//Movimiento hacia abajo de las piezas
 function moveDown() {
   undraw()
   currentPosition += width
@@ -159,13 +174,16 @@ const nextPieza = [
   [1, displayWidth+1, displayWidth*2+1, displayWidth*3+1] //iPieza
 ]
 
-//muestra la siguiente  pieza en el recuadro
+//muestra la siguiente pieza en el recuadro
 function displayShape () {
   displaySquares.forEach(square => {
     square.classList.remove('pieza')
+    square.style.backgroundColor = ''
   })
   nextPieza[nextRandom].forEach( index => {
     displaySquares[displayIndex + index].classList.add('pieza')
+    displaySquares[displayIndex + index].style.backgroundColor = colors[nextRandom]
+
   })
 }
 
@@ -177,11 +195,36 @@ startBtn.addEventListener('click', () => {
  } else {
    draw()
    //Inicia el movimiento de la pieza y la partida
-   timerId = setInterval(moveDown, 1000)
+   timerId = setInterval(moveDown, speed)
    nextRandom = Math.floor(Math.random()*piezas.length)
    displayShape()
  }
 })
+//Boton reiniciar juego
+restarBtn.addEventListener('click', () => {
+  location.reload()
+})
+
+//Botones de velocidad de caida
+//Subir velocidad de caida
+incSpeed.addEventListener('click', () => {
+  if (speed > 100) {
+      speed = speed - 150
+      speedDisplay.innerHTML = speed
+  }else {
+    alert('No puedes subir mas la velocidad')
+  }
+ })
+
+ //bajar velocidad de caida
+ decSpeed.addEventListener('click', () => {
+  if (speed < 1600) {
+      speed = speed + 150
+      speedDisplay.innerHTML = speed
+  }else {
+    alert('No puedes bajar mas la velocidad')
+  }
+ })
 
 //agregar puntaje
 function addScore() {
@@ -194,6 +237,7 @@ function addScore() {
       row.forEach(index => {
         squares[index].classList.remove('taken')
         squares[index].classList.remove('pieza')
+        squares[index].style.backgroundColor = ''
       })
       const squaresRemoved = squares.splice(i, width)
       squares = squaresRemoved.concat(squares)
@@ -205,7 +249,7 @@ function addScore() {
 //game over
 function gameOver() {
   if (current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
-    scoreDisplay.innerHTML = 'GAME OVER'
+    scoreDisplay.innerHTML = score + ' GAME OVER'
     clearInterval(timerId)
   }
 }
